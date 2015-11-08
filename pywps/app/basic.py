@@ -1,6 +1,7 @@
 import lxml
 from werkzeug.wrappers import Response
-from pywps import OWS, NAMESPACES, OGCUNIT
+
+from pywps import NAMESPACES
 
 
 def xpath_ns(el, path):

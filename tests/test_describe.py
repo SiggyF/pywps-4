@@ -1,12 +1,11 @@
 import unittest
 from collections import namedtuple
+
 from pywps import Process, Service, LiteralInput, ComplexInput, BoundingBoxInput
 from pywps import LiteralOutput, ComplexOutput, BoundingBoxOutput
 from pywps import E, WPS, OWS, OGCTYPE, Format, NAMESPACES, OGCUNIT
 from pywps.inout.literaltypes import LITERAL_DATA_TYPES
 from pywps.app.basic import xpath_ns
-from pywps.inout.formats import Format
-
 from tests.common import client_for
 
 ProcessDescription = namedtuple('ProcessDescription', ['identifier', 'inputs'])
@@ -52,8 +51,11 @@ def get_describe_result(resp):
 class DescribeProcessTest(unittest.TestCase):
 
     def setUp(self):
-        def hello(request): pass
-        def ping(request): pass
+        def hello(request):
+            pass
+
+        def ping(request):
+            pass
         processes = [Process(hello, 'hello', 'Process Hello'), Process(ping, 'ping', 'Process Ping')]
         self.client = client_for(Service(processes=processes))
 
@@ -65,7 +67,7 @@ class DescribeProcessTest(unittest.TestCase):
 
     def test_get_request_zero_args(self):
         resp = self.client.get('?Request=DescribeProcess&version=1.0.0&service=wps')
-        assert resp.status_code == 400 # bad request, identifier is missing
+        assert resp.status_code == 400  # bad request, identifier is missing
 
     def test_get_request_nonexisting_process_args(self):
         resp = self.client.get('?Request=DescribeProcess&version=1.0.0&service=wps&identifier=NONEXISTINGPROCESS')
@@ -117,13 +119,15 @@ class DescribeProcessInputTest(unittest.TestCase):
         return result
 
     def test_one_literal_string_input(self):
-        def hello(request): pass
+        def hello(request):
+            pass
         hello_process = Process(hello, 'hello', 'Process Hello', inputs=[LiteralInput('the_name', 'Input name')])
         result = self.describe_process(hello_process)
         assert result.inputs == [('the_name', 'literal', 'string')]
 
     def test_one_literal_integer_input(self):
-        def hello(request): pass
+        def hello(request):
+            pass
         hello_process = Process(hello, 'hello',
                                 'Process Hello',
                                 inputs=[LiteralInput('the_number',
@@ -184,6 +188,7 @@ class InputDescriptionTest(unittest.TestCase):
         assert default_crs.text == 'EPSG:4326'
         assert len(supported) == 2
 
+
 class OutputDescriptionTest(unittest.TestCase):
 
     def test_literal_output(self):
@@ -195,7 +200,7 @@ class OutputDescriptionTest(unittest.TestCase):
         [uoms] = xpath_ns(doc, '/Output/LiteralOutput/UOMs')
         [default_uom] = xpath_ns(uoms, './Default/ows:UOM')
         supported_uoms = xpath_ns(uoms, './Supported/ows:UOM')
-        
+
         assert output is not None
         assert identifier.text == 'literal'
         assert data_type.attrib['{%s}reference' % NAMESPACES['ows']] == OGCTYPE['string']
@@ -217,7 +222,7 @@ class OutputDescriptionTest(unittest.TestCase):
 
     def test_bbox_output(self):
         bbox = BoundingBoxOutput('bbox', 'BBox foo',
-                crss=["EPSG:4326"])
+                                 crss=["EPSG:4326"])
         doc = bbox.describe_xml()
         [outpt] = xpath_ns(doc, '/Output')
         [default_crs] = xpath_ns(doc, './BoundingBoxOutput/Default/CRS')

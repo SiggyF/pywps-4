@@ -6,7 +6,7 @@ Based on OGC OWS, WPS and
 http://lists.opengeospatial.org/pipermail/wps-dev/2013-October/000335.html
 """
 # Author:    Alex Morega & Calin Ciociu
-#            
+#
 # License:
 #
 # Web Processing Service implementation
@@ -18,10 +18,10 @@ http://lists.opengeospatial.org/pipermail/wps-dev/2013-October/000335.html
 # rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 # sell copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,12 +30,11 @@ http://lists.opengeospatial.org/pipermail/wps-dev/2013-October/000335.html
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-from werkzeug.exceptions import HTTPException, BadRequest, MethodNotAllowed
+import logging
+
+from werkzeug.exceptions import HTTPException
 from werkzeug._compat import text_type
 from werkzeug.utils import escape
-from werkzeug.http import HTTP_STATUS_CODES
-
-import logging
 
 
 class NoApplicableCode(HTTPException):
@@ -69,7 +68,9 @@ class NoApplicableCode(HTTPException):
     def get_description(self, environ=None):
         """Get the description."""
         if self.description:
-            return '''<ows:ExceptionText>%s</ows:ExceptionText>''' % escape(self.description)
+            return '''<ows:ExceptionText>%s</ows:ExceptionText>''' % escape(
+                self.description
+            )
         else:
             return ''
 
@@ -77,7 +78,7 @@ class NoApplicableCode(HTTPException):
         """Get the XML body."""
         return text_type((
             u'<?xml version="1.0" encoding="UTF-8"?>\n'
-            u'<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ows/1.1 ../../../ows/1.1.0/owsExceptionReport.xsd" version="1.0.0">'
+            u'<ows:ExceptionReport xmlns:ows="http://www.opengis.net/ows/1.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.opengis.net/ows/1.1 ../../../ows/1.1.0/owsExceptionReport.xsd" version="1.0.0">'  # noqa
             u'<ows:Exception exceptionCode="%(name)s" locator="%(locator)s" >'
             u'%(description)s'
             u'</ows:Exception>'

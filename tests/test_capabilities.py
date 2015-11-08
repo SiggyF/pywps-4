@@ -1,8 +1,9 @@
 import unittest
-import lxml.etree
+
 from pywps.app import Process, Service
 from pywps import WPS, OWS
 from tests.common import client_for
+
 
 class BadRequestTest(unittest.TestCase):
 
@@ -21,7 +22,7 @@ class BadRequestTest(unittest.TestCase):
         resp = client.get('?service=foo')
 
         exception = resp.xpath('/ows:ExceptionReport'
-                                '/ows:Exception')
+                               '/ows:Exception')
 
         assert resp.status_code == 400
         assert exception[0].attrib['exceptionCode'] == 'InvalidParameterValue'
@@ -36,8 +37,11 @@ class BadRequestTest(unittest.TestCase):
 class CapabilitiesTest(unittest.TestCase):
 
     def setUp(self):
-        def pr1(): pass
-        def pr2(): pass
+        def pr1():
+            pass
+
+        def pr2():
+            pass
         self.client = client_for(Service(processes=[Process(pr1, 'pr1', 'Process 1'), Process(pr2, 'pr2', 'Process 2')]))
 
     def check_capabilities_response(self, resp):
@@ -69,21 +73,19 @@ class CapabilitiesTest(unittest.TestCase):
     def test_get_bad_version(self):
         resp = self.client.get('?request=getcapabilities&service=wps&acceptversions=2001-123')
         exception = resp.xpath('/ows:ExceptionReport'
-                                '/ows:Exception')
+                               '/ows:Exception')
         assert resp.status_code == 400
         assert exception[0].attrib['exceptionCode'] == 'VersionNegotiationFailed'
 
     def test_post_bad_version(self):
-        acceptedVersions_doc = OWS.AcceptVersions(
-                OWS.Version('2001-123'))
+        acceptedVersions_doc = OWS.AcceptVersions(OWS.Version('2001-123'))
         request_doc = WPS.GetCapabilities(acceptedVersions_doc)
         resp = self.client.post_xml(doc=request_doc)
         exception = resp.xpath('/ows:ExceptionReport'
-                                '/ows:Exception')
+                               '/ows:Exception')
 
         assert resp.status_code == 400
         assert exception[0].attrib['exceptionCode'] == 'VersionNegotiationFailed'
-
 
 
 def load_tests(loader=None, tests=None, pattern=None):

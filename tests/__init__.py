@@ -4,14 +4,13 @@ import unittest
 from tests import test_capabilities
 from tests import test_describe
 from tests import test_execute
-from tests import test_exceptions
 from tests import test_inout
 from tests import test_literaltypes
-from tests import validator
 from tests import test_ows
 from tests import test_formats
 from tests.validator import test_complexvalidators
 from tests.validator import test_literalvalidators
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     """Load tests

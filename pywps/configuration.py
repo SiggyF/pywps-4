@@ -2,7 +2,7 @@
 Reads the PyWPS configuration file
 """
 # Author:    Calin Ciociu
-#            
+#
 # License:
 #
 # Web Processing Service implementation
@@ -14,10 +14,10 @@ Reads the PyWPS configuration file
 # rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 # sell copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -127,7 +127,8 @@ def load_configuration(cfgfiles=None):
     if not cfgfiles:
         cfgfiles = _get_default_config_files_location()
 
-    if type(cfgfiles) != type(()):
+    if not isinstance(cfgfiles, tuple):
+        # config.read accepts a list of config files
         cfgfiles = (cfgfiles)
 
     loaded_files = config.read(cfgfiles)
@@ -135,6 +136,7 @@ def load_configuration(cfgfiles=None):
         print('Configuration file(s) {} loaded'.format(loaded_files))
     else:
         print('No configuration files loaded. Using default values.')
+
 
 def _get_default_config_files_location():
     """Get the locations of the standard configuration files. These are
@@ -155,27 +157,48 @@ def _get_default_config_files_location():
 
         # Windows or Unix
         if sys.platform == 'win32':
-            PYWPS_INSTALL_DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.dirname(sys.argv[0])))
-            cfgfiles = (os.getenv("PYWPS_CFG"))
+            PYWPS_INSTALL_DIR = os.path.abspath(
+                os.path.join(
+                    os.getcwd(),
+                    os.path.dirname(sys.argv[0])
+                )
+            )
+            cfgfiles = os.getenv("PYWPS_CFG")
         else:
-            cfgfiles = (os.getenv("PYWPS_CFG"))
+            cfgfiles = os.getenv("PYWPS_CFG")
 
     # try to eastimate the default location
     else:
         # Windows or Unix
         if sys.platform == 'win32':
-            PYWPS_INSTALL_DIR = os.path.abspath(os.path.join(os.getcwd(), os.path.dirname(sys.argv[0])))
-            cfgfiles = (os.path.join(PYWPS_INSTALL_DIR, "pywps", "etc", "pywps.cfg"))
+            PYWPS_INSTALL_DIR = os.path.abspath(
+                os.path.join(
+                    os.getcwd(),
+                    os.path.dirname(sys.argv[0])
+                )
+            )
+            cfgfiles = os.path.join(
+                PYWPS_INSTALL_DIR,
+                "pywps",
+                "etc",
+                "pywps.cfg"
+            )
         else:
             homePath = os.getenv("HOME")
             if homePath:
-                cfgfiles = (os.path.join(pywps.__path__[0], "etc", "pywps.cfg"), "/etc/pywps.cfg",
-                    os.path.join(os.getenv("HOME"), ".pywps.cfg"))
+                cfgfiles = (
+                    os.path.join(pywps.__path__[0], "etc", "pywps.cfg"),
+                    "/etc/pywps.cfg",
+                    os.path.join(os.getenv("HOME"), ".pywps.cfg")
+                )
             else:
-                cfgfiles = (os.path.join(pywps.__path__[0], "etc",
-                            "pywps.cfg"), "/etc/pywps.cfg")
+                cfgfiles = (
+                    os.path.join(pywps.__path__[0], "etc", "pywps.cfg"),
+                    "/etc/pywps.cfg"
+                )
 
     return cfgfiles
+
 
 def get_size_mb(mbsize):
     """Get real size of given obeject

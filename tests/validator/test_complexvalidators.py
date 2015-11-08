@@ -1,18 +1,21 @@
 """Unit tests for complex validator
 """
 import unittest
-import sys
-from pywps.validator.complexvalidator import *
-from pywps.inout.formats import FORMATS
 import tempfile
 import os
 
+from pywps.validator.complexvalidator import validategeojson, validategeotiff, validategml, validateshapefile
+from pywps.validator.mode import MODE
+from pywps.inout.formats import FORMATS
+
 try:
-    import osgeo
+    # import check
+    import osgeo                # noqa
 except ImportError:
     WITH_GDAL = False
 else:
     WITH_GDAL = True
+
 
 def get_input(name, schema, mime_type):
 
@@ -20,6 +23,7 @@ def get_input(name, schema, mime_type):
         mimetype = 'text/plain'
         schema = None
         units = None
+
         def validate(self, data):
             return True
 
@@ -51,7 +55,6 @@ class ValidateTest(unittest.TestCase):
     def setUp(self):
         pass
 
-
     def tearDown(self):
         pass
 
@@ -80,7 +83,7 @@ class ValidateTest(unittest.TestCase):
         """Test ESRI Shapefile validator
         """
         shapefile_input = get_input('shp/point.shp.zip', None,
-                FORMATS.SHP.mime_type)
+                                    FORMATS.SHP.mime_type)
         self.assertTrue(validateshapefile(shapefile_input, MODE.NONE), 'NONE validation')
         self.assertTrue(validateshapefile(shapefile_input, MODE.SIMPLE), 'SIMPLE validation')
         if WITH_GDAL:
@@ -100,6 +103,7 @@ class ValidateTest(unittest.TestCase):
     def test_fail_validator(self):
         fake_input = get_input('point.xsd', 'point.xsd', FORMATS.SHP.mime_type)
         self.assertFalse(validategml(fake_input, MODE.SIMPLE), 'SIMPLE validation invalid')
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     if not loader:

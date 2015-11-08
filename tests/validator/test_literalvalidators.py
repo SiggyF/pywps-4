@@ -1,14 +1,18 @@
 """Unit tests for literal validator
 """
 import unittest
-from pywps.validator.literalvalidator import *
+from pywps.validator.literalvalidator import (
+    validate_anyvalue, validate_allowed_values,
+    AllowedValue, ALLOWEDVALUETYPE, RANGECLOSURETYPE
+)
+from pywps.validator.mode import MODE
 
-def get_input(allowed_values, data = 1):
+
+def get_input(allowed_values, data=1):
 
     class FakeInput(object):
         data = 1
         data_type = 'data'
-
 
     fake_input = FakeInput()
     fake_input.data = data
@@ -28,7 +32,7 @@ class ValidateTest(unittest.TestCase):
 
     def test_anyvalue_validator(self):
         """Test anyvalue validator"""
-        inpt = get_input(allowed_values = None)
+        inpt = get_input(allowed_values=None)
         self.assertTrue(validate_anyvalue(inpt, MODE.NONE))
 
     def test_allowedvalues_values_validator(self):
@@ -37,7 +41,7 @@ class ValidateTest(unittest.TestCase):
         allowed_value.allowed_type = ALLOWEDVALUETYPE.VALUE
         allowed_value.value = 1
 
-        inpt = get_input(allowed_values = [allowed_value])
+        inpt = get_input(allowed_values=[allowed_value])
         self.assertTrue(validate_allowed_values(inpt, MODE.SIMPLE), 'Allowed value 1 allowed')
 
         inpt.data = 2
@@ -53,7 +57,7 @@ class ValidateTest(unittest.TestCase):
         allowed_value.spacing = 2
         allowed_value.range_closure = RANGECLOSURETYPE.OPEN
 
-        inpt = get_input(allowed_values = [allowed_value])
+        inpt = get_input(allowed_values=[allowed_value])
 
         inpt.data = 1
         self.assertTrue(validate_allowed_values(inpt, MODE.SIMPLE), 'Range OPEN closure')
@@ -92,7 +96,7 @@ class ValidateTest(unittest.TestCase):
         allowed_value2.allowed_type = ALLOWEDVALUETYPE.VALUE
         allowed_value2.value = 15
 
-        inpt = get_input(allowed_values = [allowed_value1, allowed_value2])
+        inpt = get_input(allowed_values=[allowed_value1, allowed_value2])
 
         inpt.data = 1
         self.assertTrue(validate_allowed_values(inpt, MODE.SIMPLE), 'Range OPEN closure')
@@ -102,7 +106,6 @@ class ValidateTest(unittest.TestCase):
 
         inpt.data = 13
         self.assertFalse(validate_allowed_values(inpt, MODE.SIMPLE), 'Out of range')
-
 
 
 def load_tests(loader=None, tests=None, pattern=None):

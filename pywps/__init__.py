@@ -4,7 +4,7 @@ working with list of processes, executing them and redirecting OGC WPS
 responses back to client.
 """
 # Author:    Alex Morega & Calin Ciociu
-#            
+#
 # License:
 #
 # Web Processing Service implementation
@@ -16,10 +16,10 @@ responses back to client.
 # rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 # sell copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,6 +29,7 @@ responses back to client.
 # IN THE SOFTWARE.
 
 import os
+
 from lxml.builder import ElementMaker
 
 
@@ -77,13 +78,13 @@ OGCUNIT = {
     'unity': 'urn:ogc:def:uom:OGC:1.0:unity'
 }
 
-from pywps.app import Process, Service, WPSRequest
-from pywps.app.WPSRequest import get_inputs_from_xml, get_output_from_xml
-from pywps.inout.inputs import LiteralInput, ComplexInput, BoundingBoxInput
-from pywps.inout.outputs import LiteralOutput, ComplexOutput, BoundingBoxOutput
-from pywps.inout.formats import Format, FORMATS, get_format
-from pywps.inout import UOM
+# namespace imports, ignore not used warning
+from pywps.app import Process, Service, WPSRequest  # noqa
+from pywps.app.WPSRequest import get_inputs_from_xml, get_output_from_xml  # noqa
+from pywps.inout.inputs import LiteralInput, ComplexInput, BoundingBoxInput  # noqa
+from pywps.inout.outputs import LiteralOutput, ComplexOutput, BoundingBoxOutput  # noqa
+from pywps.inout.formats import Format, FORMATS, get_format  # noqa
+from pywps.inout import UOM  # noqa
 
 if __name__ == "__main__":
     pass
-

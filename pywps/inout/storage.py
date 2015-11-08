@@ -1,13 +1,19 @@
-from abc import ABCMeta, abstractmethod, abstractproperty
+from abc import ABCMeta, abstractmethod
 import os
+import shutil
+import tempfile
+import math
+
 from pywps._compat import PY2
-from pywps.exceptions import NotEnoughStorage, NoApplicableCode
+from pywps.exceptions import NotEnoughStorage
 from pywps import configuration as config
 
 
 class STORE_TYPE:
     PATH = 0
 # TODO: cover with tests
+
+
 class StorageAbstract(object):
     """Data storage abstract class
     """
@@ -24,6 +30,7 @@ class StorageAbstract(object):
             url - url, where the data can be downloaded
         """
         pass
+
 
 class DummyStorage(StorageAbstract):
     """Dummy empty storage implementation, does nothing
@@ -78,7 +85,6 @@ class FileStorage(StorageAbstract):
         )
 
     def store(self, output):
-        import shutil, tempfile, math
 
         file_name = output.file
 

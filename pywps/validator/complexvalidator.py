@@ -1,7 +1,7 @@
 """Validator classes are used for ComplexInputs, to validate the content
 """
 # Author:    Jachym Cepicky
-#            
+#
 # License:
 #
 # Web Processing Service implementation
@@ -13,10 +13,10 @@
 # rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 # sell copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,10 +25,12 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-from pywps.validator.mode import MODE
-from pywps.inout.formats.lists import FORMATS
 import mimetypes
 import os
+
+from pywps.validator.mode import MODE
+from pywps.inout.formats.lists import FORMATS
+
 
 def validategml(data_input, mode):
     """GML validation example
@@ -46,12 +48,11 @@ def validategml(data_input, mode):
     >>> fake_input.data_format = fake_data_format()
     >>> validategml(fake_input, MODE.SIMPLE)
     True
-    """
+    """  # noqa
     passed = False
 
     if mode >= MODE.NONE:
         passed = True
-    import sys
 
     if mode >= MODE.SIMPLE:
 
@@ -83,10 +84,11 @@ def validategml(data_input, mode):
             gmlschema_doc = etree.parse(urlopen(schema_url))
             gmlschema = etree.XMLSchema(gmlschema_doc)
             passed = gmlschema.validate(etree.parse(data_input.stream))
-        except Exception as e:
+        except Exception:
             passed = False
 
     return passed
+
 
 def validategeojson(data_input, mode):
     """GeoJSON validation example
@@ -103,7 +105,7 @@ def validategeojson(data_input, mode):
     >>> fake_input.data_format = fake_data_format()
     >>> validategeojson(fake_input, MODE.SIMPLE)
     True
-    """
+    """  # noqa
     passed = False
 
     if mode >= MODE.NONE:
@@ -157,6 +159,7 @@ def validategeojson(data_input, mode):
 
     return passed
 
+
 def validateshapefile(data_input, mode):
     """ESRI Shapefile validation example
 
@@ -194,6 +197,7 @@ def validateshapefile(data_input, mode):
 
     return passed
 
+
 def validategeotiff(data_input, mode):
     """GeoTIFF validation example
     """
@@ -219,6 +223,7 @@ def validategeotiff(data_input, mode):
 
     return passed
 
+
 def _get_schemas_home():
     """Get path to schemas directory
     """
@@ -233,7 +238,6 @@ def _get_schemas_home():
 if __name__ == "__main__":
     import doctest
 
-    import os
     from pywps.wpsserver import temp_dir
 
     with temp_dir() as tmp:

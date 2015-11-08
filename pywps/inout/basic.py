@@ -1,15 +1,17 @@
 from abc import ABCMeta, abstractmethod
+import base64
+import os
+import tempfile
+
 from pywps._compat import text_type, StringIO
-import tempfile, os
 from pywps.inout.literaltypes import LITERAL_DATA_TYPES
 from pywps import OWS, OGCUNIT, NAMESPACES
 from pywps.validator.mode import MODE
 from pywps.validator.base import emptyvalidator
 from pywps.validator import get_validator
 from pywps.validator.literalvalidator import validate_anyvalue,\
-    validate_allowed_values 
+    validate_allowed_values
 from pywps.exceptions import InvalidParameterValue
-import base64
 
 
 class SOURCE_TYPE:
@@ -17,6 +19,7 @@ class SOURCE_TYPE:
     FILE = 1
     STREAM = 2
     DATA = 3
+
 
 class DataTypeAbstract(object):
     """LiteralObject data_type abstract class
@@ -33,7 +36,7 @@ class IOHandler(object):
     """Basic IO class. Provides functions, to accept input data in file,
     memory object and stream object and give them out in all three types
 
-    >>> # setting up 
+    >>> # setting up
     >>> import os
     >>> from io import RawIOBase
     >>> from io import FileIO
@@ -118,7 +121,6 @@ class IOHandler(object):
 
         self._workdir = workdirpath
 
-
     def set_memory_object(self, memory_object):
         """Set source as in memory object"""
         self.source_type = SOURCE_TYPE.MEMORY
@@ -147,9 +149,8 @@ class IOHandler(object):
         if self.source_type == SOURCE_TYPE.FILE:
             return self.source
 
-        elif self.source_type == SOURCE_TYPE.STREAM or\
-             self.source_type == SOURCE_TYPE.DATA:
-
+        elif (self.source_type == SOURCE_TYPE.STREAM
+              or self.source_type == SOURCE_TYPE.DATA):
             if self._tempfile:
                 return self._tempfile
             else:
@@ -265,7 +266,7 @@ class SimpleHandler(IOHandler):
                         data = True
                     else:
                         data = False
-                #data = self.data_type.convert(data)
+                # data = self.data_type.convert(data)
 
                 _valid = self.validator(self, self.valid_mode)
                 if not _valid:
@@ -284,6 +285,7 @@ class BasicIO:
         self.identifier = identifier
         self.title = title
         self.abstract = abstract
+
 
 class BasicLiteral:
     """Basic literal input/output class
@@ -309,8 +311,6 @@ class BasicLiteral:
         if self.uoms:
             # default/current uom
             self.uom = self.uoms[0]
-
-
 
     @property
     def uom(self):
@@ -340,7 +340,7 @@ class BasicComplex(object):
         :param mime_type: given mimetype
         :return: Format
         """
-        
+
         for frmt in self.supported_formats:
             if frmt.mime_type == mime_type:
                 return frmt
@@ -362,7 +362,7 @@ class BasicComplex(object):
     def supported_formats(self, supported_formats):
         """Setter of supported formats
         """
-       
+
         def set_validator(supported_format):
             if not supported_format.validate or \
                supported_format.validate == emptyvalidator:
@@ -376,23 +376,26 @@ class BasicComplex(object):
     def data_format(self):
         return self._data_format
 
-
     @data_format.setter
     def data_format(self, data_format):
         """self data_format setter
         """
         if self._is_supported(data_format):
             self._data_format = data_format
-            if not data_format.validate or\
-                data_format.validate == emptyvalidator:
+            if (
+                    not data_format.validate
+                    or data_format.validate == emptyvalidator
+            ):
                 data_format.validate = get_validator(data_format.mime_type)
         else:
-            raise InvalidParameterValue("Requested format "
-                                        "%s, %s, %s not supported" %\
-                                        (data_format.mime_type,
-                                         data_format.encoding,
-                                         data_format.schema),
-                                        'mimeType')
+            raise InvalidParameterValue(
+                "Requested format "
+                "%s, %s, %s not supported" %
+                (data_format.mime_type,
+                 data_format.encoding,
+                 data_format.schema),
+                'mimeType'
+            )
 
     def _is_supported(self, data_format):
 
@@ -403,7 +406,6 @@ class BasicComplex(object):
 
         return False
 
-        
 
 class BasicBoundingBox(object):
     """Basic BoundingBox input/output class
@@ -415,6 +417,7 @@ class BasicBoundingBox(object):
         self.dimensions = dimensions
         self.ll = []
         self.ur = []
+
 
 class LiteralInput(BasicIO, BasicLiteral, SimpleHandler):
     """LiteralInput input abstract class
@@ -446,12 +449,12 @@ class LiteralOutput(BasicIO, BasicLiteral, SimpleHandler):
     """
 
     def __init__(self, identifier, title=None, abstract=None,
-                 data_type=None, workdir=None, uoms=None, validate=None, 
+                 data_type=None, workdir=None, uoms=None, validate=None,
                  mode=MODE.NONE):
         BasicIO.__init__(self, identifier, title, abstract)
         BasicLiteral.__init__(self, data_type, uoms)
-        SimpleHandler.__init__(self, workdir=None, data_type=data_type,
-                mode=mode)
+        SimpleHandler.__init__(self, workdir=None,
+                               data_type=data_type, mode=mode)
 
         self._storage = None
 
@@ -470,22 +473,24 @@ class LiteralOutput(BasicIO, BasicLiteral, SimpleHandler):
 
         return validate_anyvalue
 
+
 class BBoxInput(BasicIO, BasicBoundingBox, IOHandler):
     """Basic Bounding box input abstract class
     """
 
     def __init__(self, identifier, title=None, abstract=None, crss=None,
-            dimensions=None, workdir=None, mode=MODE.NONE):
+                 dimensions=None, workdir=None, mode=MODE.NONE):
         BasicIO.__init__(self, identifier, title, abstract)
         BasicBoundingBox.__init__(self, crss, dimensions)
         IOHandler.__init__(self, workdir=None, mode=mode)
+
 
 class BBoxOutput(BasicIO, BasicBoundingBox, SimpleHandler):
     """Basic BoundingBox output class
     """
 
     def __init__(self, identifier, title=None, abstract=None, crss=None,
-            dimensions=None, workdir=None, mode=MODE.NONE):
+                 dimensions=None, workdir=None, mode=MODE.NONE):
         BasicIO.__init__(self, identifier, title, abstract)
         BasicBoundingBox.__init__(self, crss, dimensions)
         SimpleHandler.__init__(self, workdir=None, mode=mode)
@@ -515,7 +520,6 @@ class ComplexInput(BasicIO, BasicComplex, IOHandler):
         BasicIO.__init__(self, identifier, title, abstract)
         IOHandler.__init__(self, workdir=workdir, mode=mode)
         BasicComplex.__init__(self, data_format, supported_formats)
-
 
 
 class ComplexOutput(BasicIO, BasicComplex, IOHandler):
@@ -593,7 +597,7 @@ class UOM(object):
 
 if __name__ == "__main__":
     import doctest
-    import os
+
     from pywps.wpsserver import temp_dir
 
     with temp_dir() as tmp:

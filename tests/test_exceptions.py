@@ -1,9 +1,7 @@
 import unittest
-from pywps import Process, Service, WPS, OWS
-from pywps.app.basic import xpath_ns
-from tests.common import client_for
-import lxml.etree
 
+from pywps import Service
+from tests.common import client_for
 
 
 class ExceptionsTest(unittest.TestCase):
@@ -37,6 +35,7 @@ class ExceptionsTest(unittest.TestCase):
         exception_el = resp.xpath('/ows:ExceptionReport/ows:Exception')[0]
         assert exception_el.attrib['exceptionCode'] == 'InvalidParameterValue'
         assert resp.headers['Content-Type'] == 'text/xml'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     if not loader:

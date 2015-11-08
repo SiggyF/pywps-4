@@ -3,21 +3,19 @@
 import os
 import tempfile
 import unittest
+
 from pywps import Format
 from pywps.validator import get_validator
-from pywps import NAMESPACES
 from pywps.inout.basic import IOHandler, SOURCE_TYPE, DataTypeAbstract, SimpleHandler, BBoxInput, BBoxOutput, \
     ComplexInput, ComplexOutput, LiteralInput, LiteralOutput
-from pywps.inout import BoundingBoxInput as BoundingBoxInputXML
 from pywps._compat import StringIO, text_type
 from pywps.validator.base import emptyvalidator
-
-from lxml import etree
 
 
 def get_data_format(mime_type):
     return Format(mime_type=mime_type,
-    validate=get_validator(mime_type))
+                  validate=get_validator(mime_type))
+
 
 class IOHandlerTest(unittest.TestCase):
     """IOHandler test cases"""
@@ -43,7 +41,7 @@ class IOHandlerTest(unittest.TestCase):
         """Test all outputs"""
 
         self.assertEqual(source_type, self.iohandler.source_type,
-                          'Source type properly set')
+                         'Source type properly set')
 
         self.assertEqual(self._value, self.iohandler.data, 'Data obtained')
 
@@ -76,7 +74,6 @@ class IOHandlerTest(unittest.TestCase):
         self.skipTest('Memory object not implemented')
         self.assertEqual(stream_val, self.iohandler.memory_object,
                          'Memory object obtained')
-
 
     def test_data(self):
         """Test data input IOHandler"""
@@ -126,10 +123,11 @@ class ComplexInputTest(unittest.TestCase):
 
     def test_validator(self):
         self.assertEqual(self.complex_in.data_format.validate,
-                       get_validator('application/json')) 
+                         get_validator('application/json'))
         self.assertEqual(self.complex_in.validator,
                          get_validator('application/json'))
         frmt = get_data_format('application/json')
+
         def my_validate():
             return True
         frmt.validate = my_validate
@@ -140,7 +138,6 @@ class ComplexInputTest(unittest.TestCase):
 
     def test_data_format(self):
         self.assertIsInstance(self.complex_in.supported_formats[0], Format)
-
 
 
 class ComplexOutputTest(unittest.TestCase):
@@ -171,7 +168,6 @@ class ComplexOutputTest(unittest.TestCase):
                          get_validator('application/json'))
 
 
-
 class SimpleHandlerTest(unittest.TestCase):
     """SimpleHandler test cases"""
 
@@ -189,6 +185,7 @@ class SimpleHandlerTest(unittest.TestCase):
 
     def test_data_type(self):
         self.assertEqual(self.simple_handler.data_type.convert('1'), 1)
+
 
 class LiteralInputTest(unittest.TestCase):
     """LiteralInput test cases"""
@@ -218,6 +215,7 @@ class LiteralOutputTest(unittest.TestCase):
         self.literal_output.store = storage
         self.assertEqual(self.literal_output.store, storage)
 
+
 class BoxInputTest(unittest.TestCase):
     """BBoxInput test cases"""
 
@@ -245,6 +243,7 @@ class BoxOutputTest(unittest.TestCase):
         storage = Storage()
         self.bbox_out.store = storage
         self.assertEqual(self.bbox_out.store, storage)
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     if not loader:

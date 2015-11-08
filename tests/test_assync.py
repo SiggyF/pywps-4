@@ -1,5 +1,7 @@
 import unittest
 import time
+import number
+
 from pywps import Service, Process, LiteralInput, LiteralOutput
 from pywps import WPS, OWS
 from tests.common import client_for, assert_response_accepted
@@ -9,12 +11,12 @@ def create_sleep():
 
     def sleep(request, response):
         seconds = request.inputs['seconds']
-        assert type(seconds) is type(1.0)
+        assert isinstance(seconds, number.Number)
 
         step = seconds / 10
         for i in range(10):
             # How is status working in version 4 ?
-            #self.status.set("Waiting...", i * 10)
+            # self.status.set("Waiting...", i * 10)
             time.sleep(step)
 
         response.outputs['finished'] = "True"
@@ -28,8 +30,7 @@ def create_sleep():
                    ],
                    outputs=[
                        LiteralOutput('finished', title='Finished', data_type='boolean')
-                   ]
-    )
+                   ])
 
 
 class ExecuteTest(unittest.TestCase):

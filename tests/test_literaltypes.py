@@ -1,7 +1,9 @@
 """Unit tests for IOs
 """
 import unittest
-from pywps.inout.literaltypes import *
+
+from pywps.inout.literaltypes import convert_integer, convert_string, convert_float, convert_boolean
+
 
 class ConvertorTest(unittest.TestCase):
     """IOHandler test cases"""

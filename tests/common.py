@@ -1,11 +1,13 @@
+import logging
+
 import lxml.etree
 from werkzeug.test import Client
 from werkzeug.wrappers import BaseResponse
+
 from pywps import NAMESPACES
 
-import logging
-
 logging.disable(logging.CRITICAL)
+
 
 class WpsClient(Client):
 
@@ -40,8 +42,9 @@ def assert_response_accepted(resp):
     success = resp.xpath_text('/wps:ExecuteResponse'
                               '/wps:Status'
                               '/wps:ProcessAccepted')
-    assert success != None
+    assert success is not None
     # To Do: assert status URL is present
+
 
 def assert_process_started(resp):
     assert resp.status_code == 200

@@ -1,9 +1,16 @@
-from abc import ABCMeta, abstractmethod, abstractproperty
 # TODO cover with tests
 """Literaltypes are used for LiteralInputs, to make sure, input data are OK
 """
 
-LITERAL_DATA_TYPES = ['float', 'boolean', 'measure', 'angleList', 'scale', 'angle', 'integerList', 'positiveInteger', 'anyURI', 'positiveIntegerList', 'string', 'lengthOrAngle', 'gridLength', 'measureList', 'lengthList', 'integer', 'gridLengthList', 'scaleList', 'timeList', 'nonNegativeInteger', 'length', 'time']
+LITERAL_DATA_TYPES = [
+    'float', 'boolean', 'measure', 'angleList',
+    'scale', 'angle', 'integerList', 'positiveInteger',
+    'anyURI', 'positiveIntegerList', 'string',
+    'lengthOrAngle', 'gridLength', 'measureList',
+    'lengthList', 'integer', 'gridLengthList',
+    'scaleList', 'timeList', 'nonNegativeInteger',
+    'length', 'time'
+]
 
 
 def convert_boolean(inpt):
@@ -35,6 +42,7 @@ def convert_boolean(inpt):
             val = True
     return val
 
+
 def convert_float(inpt):
     """Return float value from inpt
 
@@ -44,6 +52,7 @@ def convert_float(inpt):
 
     return float(inpt)
 
+
 def convert_integer(inpt):
     """Return integer value from input inpt
 
@@ -52,6 +61,7 @@ def convert_integer(inpt):
     """
 
     return int(float(inpt))
+
 
 def convert_string(inpt):
     """Return string value from input lit_input

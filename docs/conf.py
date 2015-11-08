@@ -1,6 +1,6 @@
 # encoding: utf-8
 
-import sys, os
+import sys
 
 project = u'PyWPS'
 copyright = u'2013, Jachym Cepicky'
@@ -21,8 +21,10 @@ htmlhelp_basename = 'PyWPSdoc'
 class Mock(object):
     def __init__(self, *args, **kwargs):
         pass
+
     def __call__(self, *args, **kwargs):
         return Mock()
+
     @classmethod
     def __getattr__(cls, name):
         if name in ('__file__', '__path__'):

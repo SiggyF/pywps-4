@@ -1,7 +1,7 @@
 """ Validator classes used for LiteralInputs
 """
 # Author:    Jachym Cepicky
-#            
+#
 # License:
 #
 # Web Processing Service implementation
@@ -13,10 +13,10 @@
 # rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
 # sell copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,8 +25,9 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-from pywps.validator.mode import MODE
 from collections import namedtuple
+
+from pywps.validator.mode import MODE
 
 _ALLOWEDVALUETYPE = namedtuple('ALLOWEDVALUETYPE', 'VALUE, RANGE')
 _RANGELCLOSURETYPE = namedtuple('RANGECLOSURETYPE', 'OPEN, CLOSED,'
@@ -34,6 +35,7 @@ _RANGELCLOSURETYPE = namedtuple('RANGECLOSURETYPE', 'OPEN, CLOSED,'
 
 ALLOWEDVALUETYPE = _ALLOWEDVALUETYPE(0, 1)
 RANGECLOSURETYPE = _RANGELCLOSURETYPE(0, 1, 2, 3)
+
 
 class AllowedValue:
     """Allowed value parameters
@@ -49,6 +51,7 @@ class AllowedValue:
         self.maxval = maxval
         self.spacing = spacing
         self.range_closure = range_closure
+
 
 def validate_anyvalue(data_input, mode):
     """Just placeholder, anyvalue is always valid
@@ -98,7 +101,7 @@ def _validate_range(interval, data):
         if interval.spacing:
             spacing = abs(interval.spacing)
             diff = data - interval.minval
-            passed = diff%spacing == 0
+            passed = diff % spacing == 0
         else:
             passed = True
 

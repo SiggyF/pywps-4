@@ -1,11 +1,13 @@
 import unittest
+
 import lxml.etree
+
 from pywps import Service, Process, LiteralOutput, LiteralInput,\
     BoundingBoxOutput, BoundingBoxInput, Format, ComplexInput, ComplexOutput
 from pywps.validator.base import emptyvalidator
 from pywps.validator.complexvalidator import validategml
 from pywps.exceptions import InvalidParameterValue
-from pywps import get_inputs_from_xml, get_output_from_xml
+from pywps import get_inputs_from_xml
 from pywps import E, WPS, OWS
 from pywps.app.basic import xpath_ns
 from pywps._compat import text_type
@@ -41,10 +43,11 @@ def create_greeter():
                    inputs=[LiteralInput('name', 'Input name', data_type='string')],
                    outputs=[LiteralOutput('message', 'Output message', data_type='string')])
 
+
 def create_bbox_process():
     def bbox_process(request, response):
         coords = request.inputs['mybbox'][0].data
-        assert type(coords) == type([])
+        assert isinstance(coords, list)
         assert len(coords) == 4
         assert coords[0] == '15'
         response.outputs['outbbox'].data = coords
@@ -56,28 +59,29 @@ def create_bbox_process():
                    inputs=[BoundingBoxInput('mybbox', 'Input name', ["EPSG:4326"])],
                    outputs=[BoundingBoxOutput('outbbox', 'Output message', ["EPSG:4326"])])
 
+
 def create_complex_proces():
     def complex_proces(request, response):
         response.outputs['complex'].data = request.inputs['complex'][0].data
         return response
 
-    frmt = Format(mime_type='application/gml') # this is unknown mimetype
+    frmt = Format(mime_type='application/gml')  # this is unknown mimetype
 
     return Process(handler=complex_proces,
-            identifier='my_complex_process',
-            title='Complex process',
-            inputs=[
-                ComplexInput(
-                    'complex',
-                    'Complex input',
-                    supported_formats=[frmt])
-            ],
-            outputs=[
-                ComplexOutput(
-                    'complex',
-                    'Complex output',
-                    supported_formats=[frmt])
-             ])
+                   identifier='my_complex_process',
+                   title='Complex process',
+                   inputs=[
+                       ComplexInput(
+                           'complex',
+                           'Complex input',
+                           supported_formats=[frmt])
+                   ],
+                   outputs=[
+                       ComplexOutput(
+                           'complex',
+                           'Complex output',
+                           supported_formats=[frmt])
+                   ])
 
 
 def get_output(doc):
@@ -103,14 +107,14 @@ class ExecuteTest(unittest.TestCase):
 
         class FakeRequest():
             identifier = 'complex_process'
-            service='wps'
-            version='1.0.0'
+            service = 'wps'
+            version = '1.0.0'
             inputs = {'complex': [{
-                    'identifier': 'complex',
-                    'mimeType': 'text/gml',
-                    'data': 'the data'
-                }]}
-        request = FakeRequest();
+                'identifier': 'complex',
+                'mimeType': 'text/gml',
+                'data': 'the data'
+            }]}
+        request = FakeRequest()
 
         try:
             service.execute('my_complex_process', request)
@@ -127,8 +131,10 @@ class ExecuteTest(unittest.TestCase):
 
         request.inputs['complex'][0]['mimeType'] = 'application/xml+gml'
         try:
-            parsed_inputs = service.create_complex_inputs(my_process.inputs[0],
-                                                      request.inputs['complex'])
+            parsed_inputs = service.create_complex_inputs(
+                my_process.inputs[0],
+                request.inputs['complex']
+            )
         except InvalidParameterValue as e:
             self.assertEqual(e.locator, 'mimeType')
 
@@ -142,11 +148,12 @@ class ExecuteTest(unittest.TestCase):
 
         my_process.inputs[0].supported_formats = [frmt]
         my_process.inputs[0].data_format = Format(mime_type='application/xml+gml')
-        parsed_inputs = service.create_complex_inputs(my_process.inputs[0],
-                                              request.inputs['complex'])
+        parsed_inputs = service.create_complex_inputs(
+            my_process.inputs[0],
+            request.inputs['complex']
+        )
 
         self.assertEqual(parsed_inputs[0].data_format.validate, validategml)
-
 
     def test_missing_process_error(self):
         client = client_for(Service(processes=[create_ultimate_question()]))
@@ -157,7 +164,7 @@ class ExecuteTest(unittest.TestCase):
         client = client_for(Service(processes=[create_ultimate_question()]))
         resp = client.get('?service=wps&version=1.0.0&Request=Execute&identifier=ultimate_question')
         assert_response_success(resp)
-        
+
         assert get_output(resp.xml) == {'outvalue': '42'}
 
     def test_post_with_no_inputs(self):
@@ -206,12 +213,16 @@ class ExecuteTest(unittest.TestCase):
         resp = client.post_xml(doc=request_doc)
         assert_response_success(resp)
 
-        [output] = xpath_ns(resp.xml, '/wps:ExecuteResponse'
-                                   '/wps:ProcessOutputs/Output')
+        [output] = xpath_ns(
+            resp.xml,
+            '/wps:ExecuteResponse'
+            '/wps:ProcessOutputs/Output'
+        )
         self.assertEqual('outbbox', xpath_ns(output,
-            './ows:Identifier')[0].text)
+                                             './ows:Identifier')[0].text)
         self.assertEqual('15 50', xpath_ns(output,
-            './ows:BoundingBox/ows:LowerCorner')[0].text)
+                                           './ows:BoundingBox/ows:LowerCorner')[0].text)
+
 
 class ExecuteXmlParserTest(unittest.TestCase):
     """Tests for Execute request XML Parser
@@ -286,6 +297,7 @@ class ExecuteXmlParserTest(unittest.TestCase):
         assert bbox.miny == '50'
         assert bbox.maxx == '60'
         assert bbox.maxy == '70'
+
 
 def load_tests(loader=None, tests=None, pattern=None):
     if not loader:

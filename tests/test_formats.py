@@ -3,9 +3,7 @@
 import unittest
 
 from pywps.inout.formats import Format, get_format, FORMATS
-from lxml import etree
 from pywps.app.basic import xpath_ns
-from pywps.validator.base import emptyvalidator
 
 
 class FormatsTest(unittest.TestCase):
@@ -63,7 +61,6 @@ class FormatsTest(unittest.TestCase):
         frmt2 = get_format('GML')
 
         self.assertTrue(frmt.same_as(frmt2))
-
 
 
 def load_tests(loader=None, tests=None, pattern=None):

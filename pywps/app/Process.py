@@ -1,6 +1,7 @@
 import os
 from uuid import uuid4
 import sys
+
 from pywps import WPS, OWS, E
 from pywps.app.WPSResponse import WPSResponse
 from pywps.exceptions import StorageNotSupported, OperationNotSupported
@@ -59,8 +60,8 @@ class Process(object):
         if self.abstract:
             doc.append(OWS.Abstract(self.abstract))
         # TODO: See Table 32 Metadata in OGC 06-121r3
-        #for m in self.metadata:
-        #    doc.append(OWS.Metadata(m))
+        # for m in self.metadata:
+        #     doc.append(OWS.Metadata(m))
         if self.profile:
             doc.append(OWS.Profile(self.profile))
         if self.wsdl:

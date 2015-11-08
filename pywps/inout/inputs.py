@@ -1,7 +1,9 @@
+from copy import deepcopy
+
 from pywps import configuration, E, OWS, WPS, OGCTYPE, NAMESPACES
 from pywps.inout import basic
-from copy import deepcopy
 from pywps.validator.mode import MODE
+
 
 class BoundingBoxInput(basic.BBoxInput):
     """
@@ -86,13 +88,13 @@ class ComplexInput(basic.ComplexInput):
     """
     :param identifier: The name of this input.
     :param allowed_formats: Allowed formats for this input. Should be a list of
-                    one or more :class:`~Format` objects. First one is assumed to 
-                    be the default. 
+                    one or more :class:`~Format` objects. First one is assumed to
+                    be the default.
     """
 
     def __init__(self, identifier, title, supported_formats=None,
                  data_format=None, abstract='', metadata=[], min_occurs=1,
-                 max_occurs=1, as_reference=False, mode=MODE.NONE): 
+                 max_occurs=1, as_reference=False, mode=MODE.NONE):
 
         if metadata is None:
             metadata = []
@@ -145,7 +147,7 @@ class ComplexInput(basic.ComplexInput):
         )
 
         return doc
-    
+
     def execute_xml(self):
         """Render Execute response XML node
 
@@ -200,8 +202,7 @@ class ComplexInput(basic.ComplexInput):
                 complex_doc.attrib['schema'] = self.data_format.schema
         doc.append(complex_doc)
         return doc
-    
-    
+
     def clone(self):
         """Create copy of yourself
         """
@@ -315,7 +316,6 @@ class LiteralInput(basic.LiteralInput):
             literal_doc.attrib['uom'] = self.uom
         doc.append(literal_doc)
         return doc
-
 
     def clone(self):
         """Create copy of yourself

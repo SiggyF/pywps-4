@@ -39,6 +39,7 @@ FORMATS = _FORMATS(
     _FORMAT('application/x-ogc-wms; version=1.0.0', '.xml', None)
 )
 
+
 def _get_mimetypes():
     """Add FORMATS to system wide mimetypes
     """
@@ -75,7 +76,6 @@ class Format(object):
         self.schema = schema
         self.validate = validate
         self.extension = extension
-
 
     @property
     def mime_type(self):
@@ -131,13 +131,15 @@ class Format(object):
         """
         self._schema = schema
 
-
     def same_as(self, frmt):
         """Check input frmt, if it seems to be the same as self
         """
-        return frmt.mime_type == self.mime_type and\
-               frmt.encoding == self.encoding and\
-               frmt.schema == self.schema
+        is_same = (
+            frmt.mime_type == self.mime_type
+            and frmt.encoding == self.encoding
+            and frmt.schema == self.schema
+        )
+        return is_same
 
     def describe_xml(self):
         """Return describe process response element
@@ -148,7 +150,6 @@ class Format(object):
             elmar.MimeType(self.mime_type)
         )
 
-
         if self.encoding:
             doc.append(elmar.Encoding(self.encoding))
 
@@ -156,6 +157,7 @@ class Format(object):
             doc.append(elmar.Schema(self.schema))
 
         return doc
+
 
 def get_format(frmt, validator=None):
     """Return Format instance based on given pywps.inout.FORMATS keyword
@@ -167,7 +169,7 @@ def get_format(frmt, validator=None):
     if frmt in FORMATS._asdict():
         formatdef = FORMATS._asdict()[frmt]
         outfrmt = Format(**formatdef._asdict())
-        outfrmt.validate=validator
+        outfrmt.validate = validator
         return outfrmt
     else:
         return Format('None', validate=validator)

@@ -1,8 +1,7 @@
 import tempfile
-from werkzeug.exceptions import BadRequest, HTTPException
+from werkzeug.exceptions import HTTPException
 from werkzeug.wrappers import Request, Response
 from pywps import WPS, OWS
-from pywps.inout import Format
 from pywps._compat import PY2
 from pywps.app.basic import xml_response
 from pywps.app.WPSRequest import WPSRequest
@@ -36,7 +35,7 @@ class Service(object):
         doc.attrib['service'] = 'WPS'
         doc.attrib['version'] = '1.0.0'
         doc.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = 'en-CA'
-        doc.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'] = 'http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd'
+        doc.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'] = 'http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd'  # noqa
         # TODO: check Table 7 in OGC 05-007r7
         doc.attrib['updateSequence'] = '1'
 
@@ -219,7 +218,7 @@ class Service(object):
     def describe(self, identifiers):
         if not identifiers:
             raise MissingParameterValue('', 'identifier')
-        
+
         identifier_elements = []
         # 'all' keyword means all processes
         if 'all' in (ident.lower() for ident in identifiers):
@@ -243,7 +242,7 @@ class Service(object):
         doc = WPS.ProcessDescriptions(
             *identifier_elements
         )
-        doc.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'] = 'http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd'
+        doc.attrib['{http://www.w3.org/2001/XMLSchema-instance}schemaLocation'] = 'http://www.opengis.net/wps/1.0.0 http://schemas.opengis.net/wps/1.0.0/wpsDescribeProcess_response.xsd'  # noqa
         doc.attrib['service'] = 'WPS'
         doc.attrib['version'] = '1.0.0'
         doc.attrib['{http://www.w3.org/XML/1998/namespace}lang'] = 'en-CA'
@@ -298,17 +297,23 @@ class Service(object):
             # Replace the dicts with the dict of Literal/Complex inputs
             # set the input to the type defined in the process
             if isinstance(inpt, ComplexInput):
-                data_inputs[inpt.identifier] = self.create_complex_inputs(inpt,
-                    wps_request.inputs[inpt.identifier])
+                data_inputs[inpt.identifier] = self.create_complex_inputs(
+                    inpt,
+                    wps_request.inputs[inpt.identifier]
+                )
             elif isinstance(inpt, LiteralInput):
-                data_inputs[inpt.identifier] = self.create_literal_inputs(inpt,
-                    wps_request.inputs[inpt.identifier])
+                data_inputs[inpt.identifier] = self.create_literal_inputs(
+                    inpt,
+                    wps_request.inputs[inpt.identifier]
+                )
             elif isinstance(inpt, BoundingBoxInput):
-                data_inputs[inpt.identifier] = self.create_bbox_inputs(inpt,
-                    wps_request.inputs[inpt.identifier])
+                data_inputs[inpt.identifier] = self.create_bbox_inputs(
+                    inpt,
+                    wps_request.inputs[inpt.identifier]
+                )
 
         wps_request.inputs = data_inputs
-        
+
         # set as_reference to True for all the outputs specified as reference
         # if the output is not required to be raw
         if not wps_request.raw:
@@ -353,11 +358,9 @@ class Service(object):
 
         def href_handler(complexinput, datain):
             """<wps:Reference /> handler"""
-            tmp_dir = config.get_config_value('server', 'workdir')
-    
             # save the reference input in workdir
             tmp_file = tempfile.mkstemp(dir=complexinput.workdir)[1]
-    
+
             try:
                 (reference_file, reference_file_data) = _openurl(href)
                 data_size = reference_file.headers.get('Content-Length', 0)
@@ -372,9 +375,13 @@ class Service(object):
             complexinput.calculate_max_input_size()
             byte_size = complexinput.max_size * 1024 * 1024
             if int(data_size) > int(byte_size):
-                raise FileSizeExceeded('File size for input exceeded.'
-                                       ' Maximum allowed: %i megabytes' %\
-                       complexinput.max_size, complexinput.get('identifier'))
+                raise FileSizeExceeded(
+                    'File size for input exceeded.'
+                    ' Maximum allowed: %i megabytes.' % (
+                        complexinput.max_size,
+                    ),
+                    locator=complexinput.get('identifier')
+                )
 
             try:
                 with open(tmp_file, 'w') as f:
@@ -382,7 +389,7 @@ class Service(object):
                     f.close()
             except Exception as e:
                 raise NoApplicableCode(e)
-    
+
             complexinput.file = tmp_file
             complexinput.url = href
             complexinput.as_reference = True
@@ -392,12 +399,10 @@ class Service(object):
 
             complexinput.data = datain.get('data')
 
-
         if href:
             return href_handler
         else:
             return data_handler
-
 
     def create_complex_inputs(self, source, inputs):
         """Create new ComplexInput as clone of original ComplexInput
@@ -420,9 +425,12 @@ class Service(object):
                 data_input.data_format = frmt
             else:
                 raise InvalidParameterValue(
-                    'Invalid mimeType value %s for input %s' %\
-                    (inpt.get('mimeType'), source.identifier),
-                    'mimeType') 
+                    'Invalid mimeType value %s for input %s' % (
+                        inpt.get('mimeType'),
+                        source.identifier
+                    ),
+                    'mimeType'
+                )
 
             data_input.method = inpt.get('method', 'GET')
 
@@ -435,9 +443,8 @@ class Service(object):
             outinputs.append(data_input)
 
         if len(outinputs) < source.min_occurs:
-            raise MissingParameterValue(locator = source.identifier)
+            raise MissingParameterValue(locator=source.identifier)
         return outinputs
-
 
     def create_literal_inputs(self, source, inputs):
         """ Takes the http_request and parses the input to objects
@@ -453,17 +460,16 @@ class Service(object):
             data_type = inpt.get('datatype')
             if data_type:
                 newinpt.data_type = data_type
-        
+
             # get the value of the field
             newinpt.data = inpt.get('data')
 
             outinputs.append(newinpt)
 
         if len(outinputs) < source.min_occurs:
-            raise MissingParameterValue(locator = source.identifier)
+            raise MissingParameterValue(locator=source.identifier)
 
         return outinputs
-
 
     def create_bbox_inputs(self, source, inputs):
         """ Takes the http_request and parses the input to objects
@@ -479,10 +485,9 @@ class Service(object):
             outinputs.append(newinpt)
 
         if len(outinputs) < source.min_occurs:
-            raise MissingParameterValue(locator = source.identifier)
+            raise MissingParameterValue(locator=source.identifier)
 
         return outinputs
-
 
     @Request.application
     def __call__(self, http_request):
@@ -520,6 +525,7 @@ def _openurl(href):
         reference_file_data = reference_file.read().decode('utf-8')
 
     return (reference_file, reference_file_data)
+
 
 def _get_datasize(reference_file_data):
 

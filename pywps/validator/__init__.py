@@ -1,10 +1,6 @@
 """Validatating functions for various inputs
 """
-from collections import namedtuple
 from pywps.validator.complexvalidator import validategml, validateshapefile, validategeojson, validategeotiff
-from pywps.validator.literalvalidator import validate_anyvalue, validate_allowed_values
-import logging
-from pywps.validator.mode import MODE
 from pywps.validator.base import emptyvalidator
 
 

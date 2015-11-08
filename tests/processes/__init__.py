@@ -1,6 +1,7 @@
 from pywps import Process
 from pywps.inout import LiteralInput
 
+
 class SimpleProcess(Process):
     identifier = "simpleprocess"
 

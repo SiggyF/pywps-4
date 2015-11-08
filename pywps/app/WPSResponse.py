@@ -3,7 +3,7 @@ import time
 
 from lxml import etree
 from werkzeug.wrappers import Request
-from werkzeug.execptions import HTTPException
+from werkzeug.exceptions import HTTPException
 
 from pywps import WPS, OWS
 from pywps.app.basic import xml_response
